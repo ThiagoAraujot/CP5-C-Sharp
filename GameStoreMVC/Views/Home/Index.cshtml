@@ -1,0 +1,103 @@
+@model IEnumerable<Game>
+@{
+    ViewData["Title"] = "Home";
+    var categoria = ViewBag.Categoria as string;
+    var categorias = new[] { "RPG", "Ação", "Corrida", "Aventura" };
+}
+
+<!-- ── Hero ── -->
+<section class="gs-hero px-4 px-md-5">
+    <div class="container gs-hero-content">
+        <div class="row">
+            <div class="col-lg-6 col-md-8">
+                <h1 class="mb-3">Domine o Jogo</h1>
+                <p class="text-muted mb-4 fs-6">
+                    Os lançamentos mais esperados e as melhores ofertas em um só lugar.<br />
+                    Upgrade no seu setup começa aqui.
+                </p>
+                <a href="#destaque" class="btn btn-success px-4 py-2 rounded-pill">Ver Ofertas</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Category Pills ── -->
+<section class="container my-4">
+    <div class="d-flex gap-2 flex-wrap">
+        <a asp-action="Index" asp-route-categoria=""
+           class="btn gs-pill @(string.IsNullOrEmpty(categoria) ? "btn-success" : "btn-outline-secondary")">
+            Todos
+        </a>
+        @foreach (var cat in categorias)
+        {
+            <a asp-action="Index" asp-route-categoria="@cat"
+               class="btn gs-pill @(categoria == cat ? "btn-success" : "btn-outline-secondary")">
+                @cat
+            </a>
+        }
+    </div>
+</section>
+
+<!-- ── Games ── -->
+<section class="container mb-5" id="destaque">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">
+            @(string.IsNullOrEmpty(categoria) ? "Em Destaque" : categoria)
+        </h4>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-controller="Game" asp-action="Criar" class="btn btn-success btn-sm">
+                + Cadastrar Novo Jogo
+            </a>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center text-muted py-5">
+            <p class="mb-3">Nenhum jogo encontrado.</p>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="Game" asp-action="Criar" class="btn btn-success">Cadastrar primeiro jogo</a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var game in Model)
+            {
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="gs-card">
+                        <img src="@game.UrlCapa" alt="@game.Nome"
+                             onerror="this.src='https://placehold.co/300x180/1e1e1e/00c853?text=Game'" />
+                        <div class="gs-card-body">
+                            <span class="badge bg-secondary mb-1" style="font-size:.7rem;">@game.Categoria</span>
+                            <h6 class="fw-bold mb-1 mt-1" style="font-size:.9rem;">@game.Nome</h6>
+                            <p class="text-muted mb-2" style="font-size:.75rem; line-height:1.3;">@game.DescricaoCurta</p>
+                            <div class="mt-auto">
+                                <p class="gs-price mb-2">R$ @game.Preco.ToString("N2")</p>
+                                <a href="#" class="btn btn-success btn-sm w-100">Comprar</a>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <div class="d-flex gap-2 mt-2">
+                                        <a asp-controller="Game" asp-action="Editar" asp-route-id="@game.Id"
+                                           class="btn btn-warning btn-sm flex-fill" style="font-size:.75rem;">Editar</a>
+                                        <form asp-controller="Game" asp-action="Excluir" method="post" class="flex-fill m-0">
+                                            <input type="hidden" name="id" value="@game.Id" />
+                                            <button type="submit" class="btn btn-danger btn-sm w-100"
+                                                    style="font-size:.75rem;"
+                                                    onclick="return confirm('Excluir @Html.Raw(game.Nome.Replace("'","\\'")??"")?\nEssa ação não pode ser desfeita.')">
+                                                Excluir
+                                            </button>
+                                        </form>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>
