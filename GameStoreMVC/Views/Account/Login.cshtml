@@ -1,0 +1,41 @@
+@model LoginViewModel
+@{ ViewData["Title"] = "Login"; }
+
+<div class="gs-auth-wrap">
+    <div class="gs-auth-card">
+
+        <div class="text-center mb-4">
+            <h3 class="fw-bold">Login</h3>
+            <p class="text-muted small mb-0">Entre para gerenciar seus games.</p>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success small py-2">@TempData["Success"]</div>
+        }
+
+        <form asp-action="Login" method="post" novalidate>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label small text-muted">E-mail</label>
+                <input asp-for="Email" class="form-control" placeholder="seu@email.com" autocomplete="email" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Senha" class="form-label small text-muted">Senha</label>
+                <input asp-for="Senha" class="form-control" placeholder="••••••" autocomplete="current-password" />
+                <span asp-validation-for="Senha" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 py-2">Acessar Arena</button>
+        </form>
+
+        <div class="text-center mt-4">
+            <p class="text-muted small mb-1">Ainda não tem uma conta?</p>
+            <a asp-action="CriarConta" class="text-success fw-bold text-decoration-none">Criar nova conta</a>
+        </div>
+
+    </div>
+</div>
